@@ -1,0 +1,84 @@
+<div class="question-list">
+  <div
+    class="question-detail"
+    *ngFor="let question of questionService.listQuestion"
+  >
+    <ng-container [formGroup]="formQuestion">
+      <div>{{ question.question }}</div>
+      <div *ngIf="question.typeOfAnswer === 'paragraph'">
+        <input formControlName="answerByParagraph" />
+      </div>
+      <div *ngIf="question.typeOfAnswer === 'checkbox-list'">
+        <div *ngFor="let answer of question.anotherQuestionArr">
+          <input type="checkbox" formControlName="checkedAnswer" />
+          <label>{{answer}}</label>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="btn-show-modal" (click)="handleShowModalAddQuestion(content)">
+    Add Question
+  </div>
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Add a New Questions</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body d-flex flex-column gap-3" [formGroup]="form">
+    <input
+      formControlName="question"
+      class="form-control"
+      placeholder="Please input your question:"
+    />
+    <select
+      formControlName="typeOfAnswer"
+      (change)="changeForm()"
+      class="form-control"
+    >
+      <option value="paragraph">Paragraph</option>
+      <option value="checkbox-list">Checkbox List</option>
+    </select>
+    <ng-container formArrayName="anotherQuestionArr">
+      <ng-container
+        *ngFor="let answer of listAddQuestion.controls; let i = index"
+      >
+        <div [formGroupName]="i">
+          <input
+            class="form-control"
+            formControlName="anotherQuestion"
+            placeholder="Add another question"
+          />
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="form.controls.typeOfAnswer.value === 'checkbox-list'">
+      <div (click)="handleAddQuestion()" class="add-another-answer">
+        + Add another answer
+      </div>
+      <div class="d-flex gap-2">
+        <input formControlName="allowOthers" type="checkbox" />
+        <div>Allow user to specify their own answer</div>
+      </div>
+      <div class="d-flex gap-2">
+        <input formControlName="isRequired" type="checkbox" />
+        <div>This field is required</div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="handleClickSubmit(modal)"
+    >
+      Submit
+    </button>
+  </div>
+</ng-template>
